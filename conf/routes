@@ -5,4 +5,4 @@
 #
 # ~~~~
 
-GET     /assets                                       s3blobs.Files.uploadForm
+# GET     /assets                                       s3blobs.Files.uploadForm
