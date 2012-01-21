@@ -1,0 +1,65 @@
+h1. S3Blobs Play Framework Module
+
+The S3Blobs Play Framework Module provides an easy way to read an write files from Amazon S3 from within JPA entities.
+
+The source code and issue tracker for S3Blobs is on github:
+"https://github.com/jamesward/S3-Blobs-module-for-Play":https://github.com/jamesward/S3-Blobs-module-for-Play
+
+h2. <a name="install">Installation</a>
+
+Install the module:
+
+bc. play install s3blobs
+
+h2. <a name="configure">Configuration</a>
+
+Set these configuration parameters in your @application.conf@ file to either the correct values or to environment variables:
+
+bc. s3.bucket=${S3_BUCKET}
+aws.access.key=${AWS_ACCESS_KEY}
+aws.secret.key=${AWS_SECRET_KEY}
+
+h2. <a name="using">Using S3Blobs</a>
+
+Add a S3Blob to an Entity:
+
+bc.. package models;
+
+import javax.persistence.Entity;
+
+import play.db.jpa.Model;
+import play.modules.s3blobs.S3Blob;
+
+@Entity
+public class Document extends Model
+{
+    public String fileName;
+    public S3Blob file;
+    public String comment;
+}
+
+p. Handle a file upload:
+
+bc.. public static void doUpload(File file, String comment) throws FileNotFoundException
+  {
+    final Document doc = new Document();
+    doc.fileName = file.getName();
+    doc.comment = comment;
+    doc.file = new S3Blob();
+    doc.file.set(new FileInputStream(file), MimeTypes.getContentType(file.getName()));
+    
+    doc.save();
+    listUploads();
+  }
+
+p. Handle a file download:
+
+bc.. public static void downloadFile(long id)
+  {
+    final Document doc = Document.findById(id);
+    notFoundIfNull(doc);
+    response.setContentTypeIfNotSet(doc.file.type());
+    renderBinary(doc.file.get(), doc.fileName);
+  }
+
+p. The full source code for this sample is available on "github":https://github.com/jamesward/S3-Blobs-module-for-Play/tree/master/s3blobs/samples-and-tests/plays3upload or in your project's @modules/s3blobs-0.1/samples-and-tests/plays3upload@ directory.

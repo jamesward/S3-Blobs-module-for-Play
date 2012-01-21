@@ -7,3 +7,9 @@ GET     /                                       Files.uploadForm
 GET     /listUploads                            Files.listUploads
 GET     /downloadFile                           Files.downloadFile
 POST    /doUpload                               Files.doUpload
+
+# Ignore favicon requests
+GET     /favicon.ico                            404
+
+# Map static resources from the /app/public folder to the /public path
+GET     /public/                                staticDir:public

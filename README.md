@@ -13,5 +13,5 @@ Use the s3blobs Play Framework Module
 Build the s3blobs Play Framework Module
 ---------------------------------------
 
-play deps --sync
-play build-module
+    play deps --sync
+    play build-module
