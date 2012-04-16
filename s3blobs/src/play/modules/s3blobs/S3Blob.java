@@ -48,6 +48,10 @@ public class S3Blob implements BinaryField, UserType {
 		s3Client.putObject(bucket, key, is, om);
 	}
 
+	public void delete () {
+		s3Client.deleteObject(s3Bucket, key);
+	}
+	
 	@Override
 	public long length() {
 		ObjectMetadata om = s3Client.getObjectMetadata(bucket, key);
