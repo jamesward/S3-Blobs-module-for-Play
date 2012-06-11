@@ -18,7 +18,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 
-public class S3Blob implements BinaryField, UserType {
+public class S3Blob implements BinaryField, UserType, Serializable {
 
 	static String s3Bucket;
 	static AmazonS3 s3Client;
