@@ -66,6 +66,9 @@ public class S3Blob implements BinaryField, UserType, Serializable {
 
 	@Override
 	public boolean exists() {
+		if (bucket == null || bucket.isEmpty() || key == null || key.isEmpty()) {
+			return false;
+		}
 		ObjectMetadata om = s3Client.getObjectMetadata(bucket, key);
 		return om != null;
 	}
