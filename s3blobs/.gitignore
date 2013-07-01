@@ -1,2 +1,7 @@
 /lib
 /dist
+/eclipse
+/tmp
+/.settings
+/.classpath
+/.project

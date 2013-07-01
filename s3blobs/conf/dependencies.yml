@@ -1,5 +1,15 @@
-self: play -> s3blobs 0.1
+self: play -> s3blobs 0.3
 
 require:
     - play
-    - com.amazonaws -> aws-java-sdk 1.3.0
+    - com.amazonaws -> aws-java-sdk 1.3.6:
+        exclude:
+            - org.freemarker -> freemarker
+            - org.springframework -> spring-beans
+            - org.springframework -> spring-core
+            - org.springframework -> spring-context
+            - org.springframework -> spring-aop
+            - aopalliance -> aopalliance
+            - org.springframework -> spring-expression
+            - org.aspectj -> aspectjrt
+            - stax -> stax-api    
