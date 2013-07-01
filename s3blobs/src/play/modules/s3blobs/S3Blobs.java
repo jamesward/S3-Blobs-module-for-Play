@@ -13,7 +13,13 @@ public class S3Blobs extends PlayPlugin {
 
 	@Override
 	public void onApplicationStart() {
+		if (!ConfigHelper.getBoolean("s3.storage.enabled", true)) {
+			Logger.info("S3Blobs module disabled");
+			return;
+		}		
+
 		Logger.info("Starting the S3Blobs module");
+		
 		if (!Play.configuration.containsKey("aws.access.key")) {
 			throw new ConfigurationException("Bad configuration for s3: no access key");
 		} else if (!Play.configuration.containsKey("aws.secret.key")) {
