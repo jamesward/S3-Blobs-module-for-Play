@@ -24,6 +24,7 @@ public class S3Blob implements BinaryField, UserType, Serializable {
 	static AmazonS3 s3Client;
 	private String bucket;
 	private String key;
+	private long contentLength;
 
 	public S3Blob() {
 	}
@@ -45,11 +46,18 @@ public class S3Blob implements BinaryField, UserType, Serializable {
 		this.key = Codec.UUID();
 		ObjectMetadata om = new ObjectMetadata();
 		om.setContentType(type);
+		if (contentLength != 0) {
+			om.setContentLength(contentLength);
+		}
 		s3Client.putObject(bucket, key, is, om);
 	}
 
 	public void delete () {
 		s3Client.deleteObject(s3Bucket, key);
+	}
+	
+	public void setContentLength(long contentLength) {
+		this.contentLength = contentLength; 
 	}
 	
 	@Override
