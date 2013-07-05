@@ -25,6 +25,7 @@ public class S3Blob implements BinaryField, UserType, Serializable {
 	private String bucket;
 	private String key;
 	private long contentLength;
+	private String keyPrefix;
 
 	public S3Blob() {
 	}
@@ -43,7 +44,7 @@ public class S3Blob implements BinaryField, UserType, Serializable {
 	@Override
 	public void set(InputStream is, String type) {
 		this.bucket = s3Bucket;
-		this.key = Codec.UUID();
+		this.key = (keyPrefix != null ? keyPrefix : "") + Codec.UUID();
 		ObjectMetadata om = new ObjectMetadata();
 		om.setContentType(type);
 		if (contentLength != 0) {
@@ -58,6 +59,10 @@ public class S3Blob implements BinaryField, UserType, Serializable {
 	
 	public void setContentLength(long contentLength) {
 		this.contentLength = contentLength; 
+	}
+	
+	public void setKeyPrefix(String keyPrefix) {
+		this.keyPrefix = keyPrefix;
 	}
 	
 	@Override
