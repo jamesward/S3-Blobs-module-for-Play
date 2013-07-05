@@ -22,6 +22,7 @@ public class S3Blob implements BinaryField, UserType, Serializable {
 
 	static String s3Bucket;
 	static AmazonS3 s3Client;
+	static boolean serverSideEncryption;
 	private String bucket;
 	private String key;
 	private long contentLength;
@@ -29,6 +30,19 @@ public class S3Blob implements BinaryField, UserType, Serializable {
 
 	public S3Blob() {
 	}
+	
+	public S3Blob(String keyPrefix) {
+		this.keyPrefix = keyPrefix;
+	}			
+	
+	public S3Blob(long contentLength) {
+		this.contentLength = contentLength;
+	}
+	
+	public S3Blob(String keyPrefix, long contentLength) {
+		this.keyPrefix = keyPrefix;
+		this.contentLength = contentLength;
+	}	
 
 	private S3Blob(String bucket, String s3Key) {
 		this.bucket = bucket;
@@ -50,19 +64,14 @@ public class S3Blob implements BinaryField, UserType, Serializable {
 		if (contentLength != 0) {
 			om.setContentLength(contentLength);
 		}
+		if (serverSideEncryption) {
+			om.setServerSideEncryption(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+		}
 		s3Client.putObject(bucket, key, is, om);
 	}
 
 	public void delete () {
 		s3Client.deleteObject(s3Bucket, key);
-	}
-	
-	public void setContentLength(long contentLength) {
-		this.contentLength = contentLength; 
-	}
-	
-	public void setKeyPrefix(String keyPrefix) {
-		this.keyPrefix = keyPrefix;
 	}
 	
 	@Override
