@@ -28,6 +28,7 @@ public class S3Blobs extends PlayPlugin {
 			throw new ConfigurationException("Bad configuration for s3: no s3 bucket");
 		}
 		S3Blob.s3Bucket = Play.configuration.getProperty("s3.bucket");
+		S3Blob.serverSideEncryption = ConfigHelper.getBoolean("s3.useServerSideEncryption", false);
 		String accessKey = Play.configuration.getProperty("aws.access.key");
 		String secretKey = Play.configuration.getProperty("aws.secret.key");
 		AWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
