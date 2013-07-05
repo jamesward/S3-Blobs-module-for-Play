@@ -16,8 +16,11 @@ h2. <a name="configure">Configuration</a>
 Set these configuration parameters in your @application.conf@ file to either the correct values or to environment variables:
 
 bc. s3.bucket=${S3_BUCKET}
+s3.storage.enabled=true          # Optional - defaults to true
+s3.useServerSideEncryption=true  # Optional - defaults to false
 aws.access.key=${AWS_ACCESS_KEY}
 aws.secret.key=${AWS_SECRET_KEY}
+
 
 h2. <a name="using">Using S3Blobs</a>
 
@@ -51,6 +54,21 @@ bc.. public static void doUpload(File file, String comment) throws FileNotFoundE
     doc.save();
     listUploads();
   }
+  
+p. Handle a file upload - with additional options:
+
+bc.. public static void doUpload(File file, String comment) throws FileNotFoundException
+  {
+    final Document doc = new Document();
+    doc.fileName = file.getName();
+    doc.comment = comment;
+    String keyPrefix = "logos/small/"; // Create a virtual folder structure within a bucket
+    doc.file = new S3Blob(keyPrefix, file.length()); // Specifying file length avoids file content in-memory buffering 
+    doc.file.set(new FileInputStream(file), MimeTypes.getContentType(file.getName()));
+    
+    doc.save();
+    listUploads();
+  }  
 
 p. Handle a file download:
 
@@ -62,4 +80,4 @@ bc.. public static void downloadFile(long id)
     renderBinary(doc.file.get(), doc.fileName);
   }
 
-p. The full source code for this sample is available on "github":https://github.com/jamesward/S3-Blobs-module-for-Play/tree/master/s3blobs/samples-and-tests/plays3upload or in your project's @modules/s3blobs-0.1/samples-and-tests/plays3upload@ directory.
+p. The full source code for this sample is available on "github":https://github.com/jamesward/S3-Blobs-module-for-Play/tree/master/s3blobs/samples-and-tests/plays3upload or in your project's @modules/s3blobs-0.4/samples-and-tests/plays3upload@ directory.
