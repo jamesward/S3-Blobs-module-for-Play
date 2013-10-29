@@ -12,4 +12,5 @@ require:
             - aopalliance -> aopalliance
             - org.springframework -> spring-expression
             - org.aspectj -> aspectjrt
-            - stax -> stax-api    
+            - stax -> stax-api,
+            - org.apache.httpcomponents -> httpclient    
