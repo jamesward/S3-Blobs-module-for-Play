@@ -30,23 +30,23 @@ public class S3Blob implements BinaryField, UserType, Serializable {
 
 	public S3Blob() {
 	}
-	
+
 	public S3Blob(String keyPrefix) {
 		this.keyPrefix = keyPrefix;
-	}			
-	
+	}
+
 	public S3Blob(long contentLength) {
 		this.contentLength = contentLength;
 	}
-	
+
 	public S3Blob(String keyPrefix, long contentLength) {
 		this.keyPrefix = keyPrefix;
 		this.contentLength = contentLength;
-	}	
+	}
 
 	private S3Blob(String bucket, String s3Key) {
 		this.bucket = bucket;
-		this.key = s3Key;
+		key = s3Key;
 	}
 
 	@Override
@@ -57,8 +57,8 @@ public class S3Blob implements BinaryField, UserType, Serializable {
 
 	@Override
 	public void set(InputStream is, String type) {
-		this.bucket = s3Bucket;
-		this.key = (keyPrefix != null ? keyPrefix : "") + Codec.UUID();
+		bucket = s3Bucket;
+		key = (keyPrefix != null ? keyPrefix : "") + Codec.UUID();
 		ObjectMetadata om = new ObjectMetadata();
 		om.setContentType(type);
 		if (contentLength != 0) {
@@ -73,7 +73,7 @@ public class S3Blob implements BinaryField, UserType, Serializable {
 	public void delete () {
 		s3Client.deleteObject(s3Bucket, key);
 	}
-	
+
 	@Override
 	public long length() {
 		ObjectMetadata om = s3Client.getObjectMetadata(bucket, key);
@@ -138,7 +138,7 @@ public class S3Blob implements BinaryField, UserType, Serializable {
 		if (o == null) {
 			return null;
 		}
-		return new S3Blob(this.bucket, this.key);
+		return new S3Blob(bucket, key);
 	}
 
 	@Override
@@ -157,7 +157,14 @@ public class S3Blob implements BinaryField, UserType, Serializable {
 	}
 
 	@Override
-	public Object replace(Object o, Object o1, Object o2) throws HibernateException {
-		throw new UnsupportedOperationException("Not supported yet.");
+	public Object replace(Object original, Object target, Object owner) throws HibernateException {
+	    if (original == null) {
+	        return null;
+	    }
+	    if (original instanceof S3Blob) {
+	        S3Blob originalBlob = (S3Blob) original;
+	        return new S3Blob(originalBlob.bucket, originalBlob.key);
+	    }
+	    return original;
 	}
 }
