@@ -6,8 +6,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Objects;
 
 import org.hibernate.HibernateException;
+import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.type.StringType;
 import org.hibernate.usertype.UserType;
 
@@ -107,7 +109,7 @@ public class S3Blob implements BinaryField, UserType, Serializable {
 
 	@Override
 	public boolean equals(Object o, Object o1) throws HibernateException {
-		return o == null ? false : o.equals(o1);
+        return Objects.equals(o, o1);
 	}
 
 	@Override
@@ -116,16 +118,16 @@ public class S3Blob implements BinaryField, UserType, Serializable {
 	}
 
 	@Override
-	public Object nullSafeGet(ResultSet rs, String[] names, Object o) throws HibernateException, SQLException {
-		String val = StringType.INSTANCE.nullSafeGet(rs, names[0]);
-		if (val == null || val.length() == 0 || !val.contains("|")) {
-			return new S3Blob();
+	public Object nullSafeGet(ResultSet rs, String[] names, SessionImplementor owner, Object o) throws HibernateException, SQLException {
+		String val = StringType.INSTANCE.nullSafeGet(rs, names[0], owner);
+		if (val == null || val.length() == 0 || !val.contains("|") || val.equals("null|null")) {
+			return null;
 		}
 		return new S3Blob(val.split("[|]")[0], val.split("[|]")[1]);
 	}
 
 	@Override
-	public void nullSafeSet(PreparedStatement ps, Object o, int i) throws HibernateException, SQLException {
+	public void nullSafeSet(PreparedStatement ps, Object o, int i, SessionImplementor owner) throws HibernateException, SQLException {
 		if (o != null) {
 			ps.setString(i, ((S3Blob) o).bucket + "|" + ((S3Blob) o).key);
 		} else {
@@ -158,6 +160,6 @@ public class S3Blob implements BinaryField, UserType, Serializable {
 
 	@Override
 	public Object replace(Object o, Object o1, Object o2) throws HibernateException {
-		throw new UnsupportedOperationException("Not supported yet.");
+		return o;
 	}
 }
