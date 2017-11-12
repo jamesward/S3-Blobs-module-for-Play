@@ -4,7 +4,7 @@ import play.Play;
 import play.exceptions.ConfigurationException;
 
 public class ConfigHelper {
-	
+
     public static Boolean getBoolean(String configKey, Boolean defaultValue) {
         String asStr = Play.configuration.getProperty(configKey);
         if (asStr == null || asStr.length() == 0) {
@@ -16,6 +16,6 @@ public class ConfigHelper {
         }
 
         throw new ConfigurationException(configKey + " must be either true or false");
-    }	
+    }
 
 }

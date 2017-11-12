@@ -1,0 +1,5 @@
+self: play -> s3blobs 0.3
+
+require:
+    - play
+    - com.amazonaws -> aws-java-sdk-s3 1.11.228
