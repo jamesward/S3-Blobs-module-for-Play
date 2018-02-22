@@ -9,7 +9,7 @@ import java.sql.Types;
 import java.util.Objects;
 
 import org.hibernate.HibernateException;
-import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.type.StringType;
 import org.hibernate.usertype.UserType;
 
@@ -137,7 +137,7 @@ public class S3Blob implements BinaryField, UserType, Serializable {
     }
 
 	@Override
-	public void nullSafeSet(PreparedStatement ps, Object o, int i, SessionImplementor owner) throws HibernateException, SQLException {
+	public void nullSafeSet(PreparedStatement ps, Object o, int i, SharedSessionContractImplementor session) throws HibernateException, SQLException {
 		if (o != null) {
 			ps.setString(i, ((S3Blob) o).key);
 		} else {
