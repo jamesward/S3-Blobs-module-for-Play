@@ -118,18 +118,28 @@ public class S3Blob implements BinaryField, UserType, Serializable {
 	}
 
 	@Override
-	public Object nullSafeGet(ResultSet rs, String[] names, SharedSessionContractImplementor session, Object o) throws HibernateException, SQLException {
-		String val = StringType.INSTANCE.nullSafeGet(rs, names[0], session);
-		if (val == null || val.length() == 0 || !val.contains("|") || val.equals("null|null")) {
-			return null;
-		}
-		return new S3Blob(val.split("[|]")[0], val.split("[|]")[1]);
-	}
+	public Object nullSafeGet(ResultSet rs, String[] names, SessionImplementor owner, Object o) throws HibernateException, SQLException {
+		String val = StringType.INSTANCE.nullSafeGet(rs, names[0], owner);
+
+        final Object result;
+        if (val == null || val.isEmpty() || "null|null".equals(val)) {
+            result = val;
+        } else {
+            boolean isLegacyKeyWithBucketPrefix = val.contains("|");
+
+            String key = isLegacyKeyWithBucketPrefix
+                    ? val.split("[|]")[1]
+                    : val;
+
+            result = new S3Blob(s3Bucket, key);
+        }
+        return result;
+    }
 
 	@Override
 	public void nullSafeSet(PreparedStatement ps, Object o, int i, SharedSessionContractImplementor session) throws HibernateException, SQLException {
 		if (o != null) {
-			ps.setString(i, ((S3Blob) o).bucket + "|" + ((S3Blob) o).key);
+			ps.setString(i, ((S3Blob) o).key);
 		} else {
 			ps.setNull(i, Types.VARCHAR);
 		}
