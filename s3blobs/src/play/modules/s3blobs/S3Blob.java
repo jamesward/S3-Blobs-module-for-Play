@@ -118,8 +118,8 @@ public class S3Blob implements BinaryField, UserType, Serializable {
 	}
 
 	@Override
-	public Object nullSafeGet(ResultSet rs, String[] names, SessionImplementor owner, Object o) throws HibernateException, SQLException {
-		String val = StringType.INSTANCE.nullSafeGet(rs, names[0], owner);
+	public Object nullSafeGet(ResultSet rs, String[] names, SharedSessionContractImplementor session, Object o) throws HibernateException, SQLException {
+		String val = StringType.INSTANCE.nullSafeGet(rs, names[0], session);
 
         final Object result;
         if (val == null || val.isEmpty() || "null|null".equals(val)) {
