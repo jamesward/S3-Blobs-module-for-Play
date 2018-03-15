@@ -1,4 +1,4 @@
-self: play -> s3blobs 0.9
+self: play -> s3blobs 0.10
 
 require:
     - play
