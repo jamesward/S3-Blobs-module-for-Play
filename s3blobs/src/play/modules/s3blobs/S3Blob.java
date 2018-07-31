@@ -172,4 +172,8 @@ public class S3Blob implements BinaryField, UserType, Serializable {
 	public Object replace(Object o, Object o1, Object o2) throws HibernateException {
 		return o;
 	}
+
+	public String getKey() {
+		return key;
+	}
 }
