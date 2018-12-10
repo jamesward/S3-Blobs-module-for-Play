@@ -7,7 +7,11 @@ import play.exceptions.ConfigurationException;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.S3Object;
 
 public class S3Blobs extends PlayPlugin {
 
@@ -32,7 +36,11 @@ public class S3Blobs extends PlayPlugin {
         String accessKey = Play.configuration.getProperty("aws.access.key");
         String secretKey = Play.configuration.getProperty("aws.secret.key");
         AWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
-        S3Blob.s3Client = new AmazonS3Client(awsCredentials);
+
+        S3Blob.s3Client = AmazonS3ClientBuilder.standard()
+                .withRegion(Regions.fromName(Play.configuration.getProperty("s3.region")))
+                .build();
+        
         if (!S3Blob.s3Client.doesBucketExist(S3Blob.s3Bucket)) {
             S3Blob.s3Client.createBucket(S3Blob.s3Bucket);
         }

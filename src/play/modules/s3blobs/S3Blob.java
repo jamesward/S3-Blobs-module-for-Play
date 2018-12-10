@@ -8,7 +8,8 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 import org.hibernate.HibernateException;
-import org.hibernate.engine.spi.SessionImplementor;
+//import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.type.StringType;
 import org.hibernate.usertype.UserType;
 
@@ -117,20 +118,26 @@ public class S3Blob implements BinaryField, UserType, Serializable {
     }
 
     @Override
-    public Object nullSafeGet(ResultSet rs, String[] names, SessionImplementor sessionImplementor, Object o) throws HibernateException, SQLException {
-        String val = StringType.INSTANCE.nullSafeGet(rs, names[0], sessionImplementor);
-        if (val == null || val.length() == 0 || !val.contains("|")) {
-            return new S3Blob();
+    public Object nullSafeGet(ResultSet resultSet, String[] strings, SharedSessionContractImplementor sharedSessionContractImplementor, Object o) throws HibernateException, SQLException
+    {
+        String val = StringType.INSTANCE.nullSafeGet(resultSet, strings[0], sharedSessionContractImplementor);
+        if (val == null || val.length() == 0 || !val.contains("|") || val.equals("null|null"))
+        {
+            return null;
         }
         return new S3Blob(val.split("[|]")[0], val.split("[|]")[1]);
     }
 
     @Override
-    public void nullSafeSet(PreparedStatement ps, Object o, int i, SessionImplementor sessionImplementor) throws HibernateException, SQLException {
-        if (o != null) {
-            ps.setString(i, ((S3Blob) o).bucket + "|" + ((S3Blob) o).key);
-        } else {
-            ps.setNull(i, Types.VARCHAR);
+    public void nullSafeSet(PreparedStatement preparedStatement, Object o, int i, SharedSessionContractImplementor sharedSessionContractImplementor) throws HibernateException, SQLException
+    {
+        if (o != null)
+        {
+            preparedStatement.setString(i, ((S3Blob) o).bucket + "|" + ((S3Blob) o).key);
+        }
+        else
+        {
+            preparedStatement.setNull(i, Types.VARCHAR);
         }
     }
 
