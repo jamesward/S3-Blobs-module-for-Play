@@ -5,8 +5,6 @@ import play.Play;
 import play.PlayPlugin;
 import play.exceptions.ConfigurationException;
 
-import org.hibernate.engine.spi.SharedSessionContractImplementor;
-
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
@@ -40,7 +38,7 @@ public class S3Blobs extends PlayPlugin {
         AWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
 
         S3Blob.s3Client = AmazonS3ClientBuilder.standard()
-                .withRegion(Regions.EU_WEST_2)
+                .withRegion(Regions.fromName(Play.configuration.getProperty("s3.region")))
                 .build();
         
         if (!S3Blob.s3Client.doesBucketExist(S3Blob.s3Bucket)) {
