@@ -1,19 +1,5 @@
-self: play -> s3blobs 0.11
+self: play -> s3blobs 0.12
 
 require:
     - play
-    - com.amazonaws -> aws-java-sdk 1.7.5:
-        exclude:
-            - org.freemarker -> freemarker
-            - org.springframework -> spring-beans
-            - org.springframework -> spring-core
-            - org.springframework -> spring-context
-            - org.springframework -> spring-aop
-            - org.springframework -> spring-test
-            - aopalliance -> aopalliance
-            - org.springframework -> spring-expression
-            - org.aspectj -> aspectjrt
-            - stax -> stax-api
-            - stax -> stax    
-            - mail -> javax.mail
-            - junit -> junit
+    - com.amazonaws -> aws-java-sdk-s3 1.11.341
