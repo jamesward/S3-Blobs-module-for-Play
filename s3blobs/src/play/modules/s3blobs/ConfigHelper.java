@@ -5,7 +5,7 @@ import play.exceptions.ConfigurationException;
 
 public class ConfigHelper {
 	
-    public static Boolean getBoolean(String configKey, Boolean defaultValue) {
+    public static boolean getBoolean(String configKey, boolean defaultValue) {
         String asStr = Play.configuration.getProperty(configKey);
         if (asStr == null || asStr.length() == 0) {
             return defaultValue;

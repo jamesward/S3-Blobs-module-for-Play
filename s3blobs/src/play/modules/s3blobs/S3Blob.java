@@ -1,5 +1,14 @@
 package play.modules.s3blobs;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.S3Object;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
+import org.hibernate.type.StringType;
+import org.hibernate.usertype.UserType;
+import play.db.Model.BinaryField;
+import play.libs.Codec;
+
 import java.io.InputStream;
 import java.io.Serializable;
 import java.sql.PreparedStatement;
@@ -7,18 +16,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Objects;
-
-import org.hibernate.HibernateException;
-import org.hibernate.engine.spi.SharedSessionContractImplementor;
-import org.hibernate.type.StringType;
-import org.hibernate.usertype.UserType;
-
-import play.db.Model.BinaryField;
-import play.libs.Codec;
-
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.S3Object;
 
 public class S3Blob implements BinaryField, UserType, Serializable {
 
@@ -67,7 +64,7 @@ public class S3Blob implements BinaryField, UserType, Serializable {
 			om.setContentLength(contentLength);
 		}
 		if (serverSideEncryption) {
-			om.setServerSideEncryption(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+			om.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
 		}
 		s3Client.putObject(bucket, key, is, om);
 	}
@@ -108,17 +105,17 @@ public class S3Blob implements BinaryField, UserType, Serializable {
 	}
 
 	@Override
-	public boolean equals(Object o, Object o1) throws HibernateException {
+	public boolean equals(Object o, Object o1) {
         return Objects.equals(o, o1);
 	}
 
 	@Override
-	public int hashCode(Object o) throws HibernateException {
+	public int hashCode(Object o) {
 		return o.hashCode();
 	}
 
 	@Override
-	public Object nullSafeGet(ResultSet rs, String[] names, SharedSessionContractImplementor session, Object o) throws HibernateException, SQLException {
+	public Object nullSafeGet(ResultSet rs, String[] names, SharedSessionContractImplementor session, Object o) throws SQLException {
 		String val = StringType.INSTANCE.nullSafeGet(rs, names[0], session);
 
         final Object result;
@@ -127,17 +124,17 @@ public class S3Blob implements BinaryField, UserType, Serializable {
         } else {
             boolean isLegacyKeyWithBucketPrefix = val.contains("|");
 
-            String key = isLegacyKeyWithBucketPrefix
+            String resolvedKey = isLegacyKeyWithBucketPrefix
                     ? val.split("[|]")[1]
                     : val;
 
-            result = new S3Blob(s3Bucket, key);
+            result = new S3Blob(s3Bucket, resolvedKey);
         }
         return result;
     }
 
 	@Override
-	public void nullSafeSet(PreparedStatement ps, Object o, int i, SharedSessionContractImplementor session) throws HibernateException, SQLException {
+	public void nullSafeSet(PreparedStatement ps, Object o, int i, SharedSessionContractImplementor session) throws SQLException {
 		if (o != null) {
 			ps.setString(i, ((S3Blob) o).key);
 		} else {
@@ -146,7 +143,7 @@ public class S3Blob implements BinaryField, UserType, Serializable {
 	}
 
 	@Override
-	public Object deepCopy(Object o) throws HibernateException {
+	public Object deepCopy(Object o) {
 		if (o == null) {
 			return null;
 		}
@@ -159,17 +156,17 @@ public class S3Blob implements BinaryField, UserType, Serializable {
 	}
 
 	@Override
-	public Serializable disassemble(Object o) throws HibernateException {
+	public Serializable disassemble(Object o) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override
-	public Object assemble(Serializable srlzbl, Object o) throws HibernateException {
+	public Object assemble(Serializable srlzbl, Object o) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override
-	public Object replace(Object o, Object o1, Object o2) throws HibernateException {
+	public Object replace(Object o, Object o1, Object o2) {
 		return o;
 	}
 
